@@ -12,3 +12,8 @@ gensim
 scipy
 newlinejson
 pandas
+
+
+################################################################
+# for usecase
+matplotlib
