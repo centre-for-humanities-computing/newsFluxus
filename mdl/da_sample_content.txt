@@ -1,0 +1,50 @@
+(0, '0.032*"så" + 0.029*"kunne" + 0.019*"få" + 0.016*"sige" + 0.012*"komme" + 0.011*"gøre" + 0.011*"se" + 0.011*"dag" + 0.010*"stor" + 0.010*"anden"')
+
+(1, '0.034*"læge" + 0.017*"hospital" + 0.016*"patient" + 0.016*"sygehus" + 0.012*"arbejde" + 0.012*"kollega" + 0.012*"borger" + 0.012*"person" + 0.011*"behandling" + 0.011*"region"')
+
+(2, '0.023*"sige" + 0.018*"kunne" + 0.017*"dansk" + 0.016*"anden" + 0.013*"danmark" + 0.013*"få" + 0.012*"mange" + 0.012*"regering" + 0.011*"stor" + 0.010*"blandt"')
+
+(3, '0.018*"tv" + 0.015*"bolig" + 0.014*"biograf" + 0.013*"tour" + 0.009*"salg" + 0.008*"france" + 0.008*"hvilken" + 0.008*"sørense" + 0.008*"fransk" + 0.007*"jonas"')
+
+(4, '0.031*"kamp" + 0.024*"klub" + 0.023*"spille" + 0.018*"spil" + 0.017*"fodbold" + 0.015*"spiller" + 0.013*"svensk" + 0.012*"dansk" + 0.010*"matchfixing" + 0.010*"udbyde"')
+
+(5, '0.024*"abort" + 0.016*"michael" + 0.012*"stat" + 0.012*"ohio" + 0.012*"find" + 0.011*"sæson" + 0.009*"podcast" + 0.009*"roney" + 0.009*"amerikansk" + 0.009*"www"')
+
+(6, '0.032*"dyr" + 0.028*"oliv" + 0.020*"spise" + 0.017*"menneske" + 0.015*"krone" + 0.012*"thomas" + 0.011*"smage" + 0.011*"god" + 0.010*"smag" + 0.009*"salt"')
+
+(7, '0.027*"barn" + 0.013*"lidt" + 0.013*"mand" + 0.010*"lejlighed" + 0.010*"kvinde" + 0.009*"væk" + 0.008*"gå" + 0.008*"ven" + 0.008*"familie" + 0.008*"går"')
+
+(8, '0.028*"medie" + 0.019*"parti" + 0.018*"kulturminister" + 0.017*"kultur" + 0.017*"joy" + 0.016*"krone" + 0.016*"forhandling" + 0.016*"mogensen" + 0.015*"regering" + 0.011*"dansk"')
+
+(9, '0.036*"festival" + 0.024*"påsk" + 0.016*"hongkong" + 0.014*"aflyse" + 0.014*"rejse" + 0.014*"arrangement" + 0.011*"marts" + 0.010*"samle" + 0.010*"sverig" + 0.010*"statsminister"')
+
+(10, '0.022*"kapacitet" + 0.020*"test" + 0.018*"patient" + 0.016*"sige" + 0.016*"teste" + 0.014*"dansk" + 0.013*"testkapacitet" + 0.013*"danmark" + 0.013*"italie" + 0.013*"læge"')
+
+(11, '0.027*"krone" + 0.018*"million" + 0.017*"københavn" + 0.014*"sag" + 0.013*"område" + 0.013*"dom" + 0.011*"landsret" + 0.011*"betale" + 0.010*"nørholt" + 0.010*"skat"')
+
+(12, '0.021*"virksomhed" + 0.020*"økonomi" + 0.015*"økonomisk" + 0.014*"kris" + 0.010*"koncern" + 0.009*"husleje" + 0.009*"penge" + 0.009*"hjælpepakker" + 0.009*"nationalbank" + 0.009*"krise"')
+
+(13, '0.018*"samfund" + 0.012*"statsminister" + 0.011*"igen" + 0.009*"politisk" + 0.009*"økonomisk" + 0.009*"åbning" + 0.009*"kris" + 0.009*"mete" + 0.009*"grænse" + 0.009*"krise"')
+
+(14, '0.033*"radio" + 0.021*"sang" + 0.017*"loud" + 0.013*"spille" + 0.011*"ung" + 0.010*"syv" + 0.008*"time" + 0.008*"sende" + 0.008*"koncert" + 0.007*"album"')
+
+(15, '0.022*"parti" + 0.018*"eu" + 0.016*"orban" + 0.013*"ungarn" + 0.013*"stemme" + 0.012*"fidesz" + 0.011*"kriminalitet" + 0.011*"regering" + 0.010*"lov" + 0.010*"udlænding"')
+
+(16, '0.026*"smitte" + 0.024*"antal" + 0.023*"død" + 0.022*"usa" + 0.017*"tal" + 0.016*"coronavirus" + 0.015*"kina" + 0.012*"land" + 0.010*"trump" + 0.010*"stige"')
+
+(17, '0.020*"dansker" + 0.018*"hjem" + 0.012*"land" + 0.012*"peru" + 0.012*"fly" + 0.010*"migrant" + 0.010*"rejse" + 0.010*"indien" + 0.010*"lima" + 0.009*"lukke"')
+
+(18, '0.012*"april" + 0.010*"roman" + 0.010*"død" + 0.009*"wiggo" + 0.009*"jord" + 0.008*"film" + 0.008*"fars" + 0.007*"gammel" + 0.007*"venus" + 0.006*"elske"')
+
+(19, '0.036*"barn" + 0.014*"medie" + 0.012*"ren" + 0.012*"si" + 0.011*"ger" + 0.011*"ekstra" + 0.010*"tv" + 0.010*"historie" + 0.010*"familie" + 0.009*"aprilsnar"')
+
+(20, '0.017*"teater" + 0.013*"serie" + 0.013*"bare" + 0.012*"marcos" + 0.010*"lidt" + 0.010*"se" + 0.009*"imelda" + 0.008*"sæson" + 0.007*"kongelig" + 0.007*"verden"')
+
+(21, '0.026*"nørgaard" + 0.023*"bil" + 0.022*"køre" + 0.019*"politi" + 0.017*"jørge" + 0.016*"peders" + 0.015*"år" + 0.014*"siden" + 0.012*"ejnar" + 0.010*"time"')
+
+(22, '0.057*"smitte" + 0.019*"syg" + 0.019*"test" + 0.017*"sygdom" + 0.017*"virus" + 0.015*"kunne" + 0.015*"symptom" + 0.012*"spørgsmål" + 0.012*"covid" + 0.012*"corona"')
+
+(23, '0.021*"land" + 0.015*"italie" + 0.014*"kollektiv" + 0.013*"tyskland" + 0.012*"eu" + 0.011*"tysk" + 0.010*"passagerpulse" + 0.009*"trafik" + 0.009*"transport" + 0.008*"passager"')
+
+(24, '0.075*"elev" + 0.050*"skole" + 0.021*"undervisning" + 0.019*"eksamen" + 0.017*"klasse" + 0.014*"lærer" + 0.013*"barn" + 0.013*"gymnasium" + 0.012*"kvote" + 0.011*"thulin"')
+
