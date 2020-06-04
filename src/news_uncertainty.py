@@ -93,15 +93,15 @@ def regline(x, y, bootstap=True, fname="regline.png"):
     p, _ = np.polyfit(x, y, 1, cov=True)
     y_model = np.polyval(p, x)
     # statistics
-    n = y.size# number of observations
-    m = p.size# number of parameters
-    dof = n - m# degrees of freedom
-    t = stats.t.ppf(0.975, n - m)# used for CI and PI bands
+    n = y.size
+    m = p.size
+    dof = n - m
+    t = stats.t.ppf(0.975, n - m)
     # estimates of error
     resid = y - y_model                           
-    chi2 = np.sum((resid / y_model)**2)                        # chi-squared; estimates error in data
-    chi2_red = chi2 / dof                                      # reduced chi-squared; measures goodness of fit
-    s_err = np.sqrt(np.sum(resid**2) / dof)                   # standard deviation of the error    
+    chi2 = np.sum((resid / y_model)**2) 
+    chi2_red = chi2 / dof
+    s_err = np.sqrt(np.sum(resid**2) / dof)    
     # plot
     fig, ax = plt.subplots(figsize=(8, 7.5),dpi=300)
     ax.plot(x, y, ".", color="#b9cfe7", markersize=8,markeredgewidth=1, markeredgecolor="r", markerfacecolor="None")
@@ -135,7 +135,7 @@ def regline(x, y, bootstap=True, fname="regline.png"):
     # custom legend
     handles, labels = ax.get_legend_handles_labels()
     display = (0, 1)
-    anyArtist = plt.Line2D((0, 1), (0, 0), color="#ea5752")    # create custom artists
+    anyArtist = plt.Line2D((0, 1), (0, 0), color="#ea5752")
     legend = plt.legend(
         [handle for i, handle in enumerate(handles) if i in display] + [anyArtist],
         [label for i, label in enumerate(labels) if i in display] + ["95% Confidence Limits"],
