@@ -82,10 +82,13 @@ $ python python src/signal_extraction.py --model mdl/da_sample_model.pcl
 2. Create your feature branch: `git checkout -b my-new-feature`
 3. Commit your changes: `git commit -am 'Add some feature'`
 4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
+5. Submit a pull request :smiling_imp:
 
 ## Versioning
 
+| Edition | Date | Comment |
+| --- | --- | --- |
+| v1 | June 04 2020 | Launch |
 
 ## Authors
 Kristoffer L. Nielbo
