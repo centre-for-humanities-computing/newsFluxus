@@ -5,9 +5,9 @@
 For running in virtual environment (recommended) and assuming python3.7+ is installed.
 
 ```
-sudo pip3 install virtualenv
-virtualenv -p /usr/bin/python3.7 venv
-source venv/bin/activate
+$ sudo pip3 install virtualenv
+$ virtualenv -p /usr/bin/python3.7 venv
+$ source venv/bin/activate
 ```
 
 ## Installation
@@ -15,8 +15,8 @@ source venv/bin/activate
 Clone repository and install requirements
 
 ```bash
-git clone https://github.com/centre-for-humanities-computing/newsFluxus.git
-pip3 install -r requirements.txt
+$ git clone https://github.com/centre-for-humanities-computing/newsFluxus.git
+$ pip3 install -r requirements.txt
 ```
 ### GPU acceleration
 
@@ -25,15 +25,23 @@ Currently the requirements file installs `torch` and `torchvision` without suppo
 
 ### Download language resources
 ```python
-$ python downloader.py --langauge <language code>
+$ python downloader.py --langauge <language-code>
 # ex. for Danish langauge resources
 $ python downloader.py --langauge da
 ```
 And you will be prompted for location to store data, just use default. To find language codes see [StanfordNLP](https://stanfordnlp.github.io/stanfordnlp/models.html#human-languages-supported-by-stanfordnlp)
 
-### Run train model and extract signal
+### Train model and extract signal
 ```bash
 bash main.sh
+```
+
+And individually
+
+```
+$ python src/bow_mdl.py --dataset <path-to-dataset> --language <language-code> --bytestore <frequency-of-backup> --sourcename <name-of-dataset> --estimate "<start stop step>" --verbose <frequency-of-log>
+
+$ python src/signal_extraction.py --model <path-to-serialized-model>
 ```
 
 ## Contributing
