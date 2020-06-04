@@ -7,6 +7,9 @@ while true;do echo -n '>';sleep 1;done &
 python src/bow_mdl.py --dataset dat/sample.ndjson --language da --bytestore 100 --sourcename sample --verbose 100
 python src/signal_extraction.py --model mdl/da_sample_model.pcl
 
+#python src/news_uncertainty.py --dataset mdl/da_sample_signal.json --window 63
+
+
 kill $!; trap 'kill $!' SIGTERM
 echo
 echo ':)'
