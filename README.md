@@ -1,10 +1,12 @@
 # NewsFluxus - Demo #
-Tool for representing change and persistence in newspapers. For an exposition of the underlying method see [https://centre-for-humanities-computing.github.io/Nordic-Digital-Humanities-Laboratory/portfolio/news_c19_method/](Detection of Persistent Change in Nordic Newspapers)
+
+Tool for representing change and persistence in newspapers. For an exposition of the underlying method see [Detection of Persistent Change in Nordic Newspapers](https://centre-for-humanities-computing.github.io/Nordic-Digital-Humanities-Laboratory/portfolio/news_c19_method/).
+
 ## Prerequisites
 
 For running in virtual environment (recommended) and assuming python3.7+ is installed.
 
-```
+```bash
 $ sudo pip3 install virtualenv
 $ virtualenv -p /usr/bin/python3.7 venv
 $ source venv/bin/activate
@@ -24,7 +26,7 @@ Currently the requirements file installs `torch` and `torchvision` without suppo
 
 
 ### Download language resources
-```python
+```bash
 $ python downloader.py --langauge <language-code>
 # ex. for Danish langauge resources
 $ python downloader.py --langauge da
