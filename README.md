@@ -1,7 +1,5 @@
 # NewsFluxus - Demo #
 
-mkvirtualenv nflux -p /usr/bin/python3.7
-
 ## Prerequisites
 
 For running in virtual environment (recommended) and assuming python3.7+ is installed.
