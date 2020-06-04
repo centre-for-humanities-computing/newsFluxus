@@ -67,3 +67,4 @@ Kristoffer L. Nielbo
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
+[Stopwords ISO](https://github.com/stopwords-iso) for their multilingual collection of stopwords. 

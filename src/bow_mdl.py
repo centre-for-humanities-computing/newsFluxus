@@ -46,8 +46,8 @@ def main():
     cf = CaseFolder(lower=True)
     re0 = RegxFilter(pattern=r"\W+")
     re1 = RegxFilter(pattern=r"\d+")
-    #sw = StopWordFilter(path=os.path.join("..", "res", "stopwords-{}.txt".format(args["language"])))
-    sw = StopWordFilter(language="danish")
+    sw = StopWordFilter(path=os.path.join("res", "stopwords-{}.txt".format(args["language"])))
+    #sw = StopWordFilter(language="danish")# using NLTK's stopwords
     le = Lemmatizer(lang=args["language"])
     dl = DatasetLoaderNdjson(preprocessors=[cf,re0,re1,sw,le])
     data, _, dates = dl.load(args["dataset"], datesort=True, verbose=args["verbose"], bytestore=args["bytestore"])
