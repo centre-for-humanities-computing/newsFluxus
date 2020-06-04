@@ -84,7 +84,7 @@ $ python src/news_uncertainty.py --dataset mdl/da_sample_signal.json --window 63
 ```
 resulting visualizations in `fig/`
 
-![NxR slope](./fig/regline.png)
+<img src="https://raw.githubusercontent.com/centre-for-humanities-computing/newsFluxus/master/fig/regline.png?token=AHV2NPSIWW2CYYFDLOMWYYC64JXNG" width="200" height="200" />
 
 
 ## Contributing
