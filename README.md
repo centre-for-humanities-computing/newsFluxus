@@ -12,7 +12,7 @@ virtualenv -p /usr/bin/python3.7 venv
 source venv/bin/activate
 ```
 
-## Installing
+## Installation
 
 Clone repository and install requirements
 
@@ -37,3 +37,23 @@ And you will be prompted for location to store data, just use default. To find l
 ```bash
 bash main.sh
 ```
+
+## Contributing
+
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
+
+## Versioning
+
+
+## Authors
+Kristoffer L. Nielbo
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
