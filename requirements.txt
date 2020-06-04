@@ -1,0 +1,14 @@
+################################################################
+# See README for GPU acceleration
+#
+################################################################
+
+numpy
+torch
+torchvision
+stanfordnlp
+nltk
+gensim
+scipy
+newlinejson
+pandas
