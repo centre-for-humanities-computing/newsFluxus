@@ -53,7 +53,7 @@ $ python downloader.py --language da
 And you will be prompted for location to store data, just use default. To find language codes see [StanfordNLP](https://stanfordnlp.github.io/stanfordnlp/models.html#human-languages-supported-by-stanfordnlp)
 
 #### Test StanfordNLP Installation
-```bash
+```
 >>> import stanfordnlp
 
 >>> nlp = stanfordnlp.Pipeline(lang="da")
@@ -63,7 +63,7 @@ And you will be prompted for location to store data, just use default. To find l
 
 ### Train model and extract signal
 ```bash
-bash main.sh
+$ bash main.sh
 ```
 
 And individually
