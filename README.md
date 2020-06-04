@@ -1,5 +1,5 @@
 # NewsFluxus - Demo #
-
+Tool for representing change and persistence in newspapers. For an exposition of the underlying method see [https://centre-for-humanities-computing.github.io/Nordic-Digital-Humanities-Laboratory/portfolio/news_c19_method/](Detection of Persistent Change in Nordic Newspapers)
 ## Prerequisites
 
 For running in virtual environment (recommended) and assuming python3.7+ is installed.
@@ -40,8 +40,10 @@ And individually
 
 ```
 $ python src/bow_mdl.py --dataset <path-to-dataset> --language <language-code> --bytestore <frequency-of-backup> --sourcename <name-of-dataset> --estimate "<start stop step>" --verbose <frequency-of-log>
-
 $ python src/signal_extraction.py --model <path-to-serialized-model>
+# ex. for Danish sample
+$ python bow_mdl.py --dataset ../dat/sample.ndjson --language da --bytestore 100 --estimate "20 50 10" --sourcename sample --verbose 100
+$ python python src/signal_extraction.py --model mdl/da_sample_model.pcl
 ```
 
 ## Contributing
