@@ -22,7 +22,7 @@ $ pip3 install -r requirements.txt
 ```
 ### GPU acceleration
 
-Currently the requirements file installs `torch` and `torchvision` without support for GPU acceleration. If you want to use your accelerator(-s) comment out `torch` and `torchvision` in the requirements file, uninstall with pip (if relevant), and run `pip3 install torch==1.5.0+cu101 torchvision==0.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html` for your desired CUDA distribution (in this case 10.1).
+Currently the requirements file installs `torch` and `torchvision` without support for GPU acceleration. If you want to use your accelerator(-s) comment out `torch` and `torchvision` in the requirements file, uninstall with pip (if relevant), and run `pip3 install torch==1.5.0+cu101 torchvision==0.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html` for your desired CUDA version (in this case 10.1).
 
 
 ### Download language resources
@@ -67,4 +67,4 @@ Kristoffer L. Nielbo
 This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
-[Stopwords ISO](https://github.com/stopwords-iso) for their multilingual collection of stopwords. 
+[Stopwords ISO](https://github.com/stopwords-iso) for their multilingual collection of stopwords.
