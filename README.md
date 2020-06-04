@@ -38,7 +38,7 @@ bash main.sh
 
 And individually
 
-```
+```bash
 $ python src/bow_mdl.py --dataset <path-to-dataset> --language <language-code> --bytestore <frequency-of-backup> --sourcename <name-of-dataset> --estimate "<start stop step>" --verbose <frequency-of-log>
 $ python src/signal_extraction.py --model <path-to-serialized-model>
 # ex. for Danish sample
