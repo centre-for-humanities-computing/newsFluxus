@@ -2,7 +2,6 @@
 # See README for GPU acceleration
 #
 ################################################################
-
 numpy
 torch
 torchvision
@@ -12,8 +11,6 @@ gensim
 scipy
 newlinejson
 pandas
-
-
 ################################################################
 # for usecase
 matplotlib
