@@ -84,9 +84,10 @@ $ python src/news_uncertainty.py --dataset mdl/da_sample_signal.json --window 63
 ```
 resulting visualizations in `fig/`
 
-<img src="https://raw.githubusercontent.com/centre-for-humanities-computing/newsFluxus/master/fig/regline.png?token=AHV2NPSIWW2CYYFDLOMWYYC64JXNG" width="200" height="200" />
-
-
+<p float="left">
+  <img src="/fig/adaptline.png" width="100" />
+  <img src="/fig/regline.png" width="100" />
+</p>
 ## Contributing
 
 1. Fork it!
