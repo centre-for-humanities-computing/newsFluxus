@@ -29,7 +29,7 @@ Currently the requirements file installs `torch` and `torchvision` without suppo
 ```bash
 $ python downloader.py --langauge <language-code>
 # ex. for Danish langauge resources
-$ python downloader.py --langauge da
+$ python downloader.py --language da
 ```
 And you will be prompted for location to store data, just use default. To find language codes see [StanfordNLP](https://stanfordnlp.github.io/stanfordnlp/models.html#human-languages-supported-by-stanfordnlp)
 
