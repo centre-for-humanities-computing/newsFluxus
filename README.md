@@ -28,11 +28,11 @@ Currently the requirements file installs `torch` and `torchvision` without suppo
 ### Install Mallet
 Clone and install Mallet (plus dependencies)
 ```sh
-sudo apt-get install default-jdk
-sudo apt-get install ant
-git clone git@github.com:mimno/Mallet.git
-cd Mallet/
-ant
+$ sudo apt-get install default-jdk
+$ sudo apt-get install ant
+$ git clone git@github.com:mimno/Mallet.git
+$ cd Mallet/
+$ ant
 ```
 Change path the local mallet installation in `src/tekisuto/models/latentsemantics.py`
 
