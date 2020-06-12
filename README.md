@@ -1,6 +1,6 @@
 # NewsFluxus #
 
-Tool for modelling change and persistence in newspaper content. For an exposition of the underlying method see [Detection of Persistent Change in Nordic Newspapers](https://centre-for-humanities-computing.github.io/Nordic-Digital-Humanities-Laboratory/portfolio/news_c19_method/).
+Tool for modelling change and persistence in newspaper content. For an exposition of the underlying method see [Persistent News: The Information Dynamics of Nordic Newspapers](https://centre-for-humanities-computing.github.io/Nordic-Digital-Humanities-Laboratory/portfolio/news_c19_method/) and for design see [News-fluxus design specification](https://github.com/centre-for-humanities-computing/newsFluxus).
 
 ## Prerequisites
 
