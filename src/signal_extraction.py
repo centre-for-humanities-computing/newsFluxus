@@ -18,6 +18,7 @@ def main():
     # input
     ap = argparse.ArgumentParser(description="[INFO] signal extraction for the uncertainty model")
     ap.add_argument("-m", "--model", required=True, help="path to serialized input model")
+    ap.add_argument("-w", "--window", required=False, type=int, default=3, help="window to compute novelty and resonance over")
     args = vars(ap.parse_args())
 
     # import data
@@ -29,7 +30,7 @@ def main():
     
     # instantiate and call
     print("[INFO] extracting signal...")
-    idmdl = InfoDynamics(data = theta, time = time)
+    idmdl = InfoDynamics(data = theta, time = time, window = args["window"])
     idmdl.novelty(meas = jsd)
     idmdl.transience(meas = jsd)
     idmdl.resonance(meas = jsd)
