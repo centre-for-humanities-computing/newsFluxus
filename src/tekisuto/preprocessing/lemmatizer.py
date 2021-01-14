@@ -1,11 +1,11 @@
 """
-Simple preprocesser for lemmatization with Stanford NLP
+Simple preprocesser for lemmatization with Stanza
 """
-import stanfordnlp
+import stanza
 
 class Lemmatizer:
     def __init__(self, lang="en"):
-        self.nlp = stanfordnlp.Pipeline(processors='tokenize,mwt,pos,lemma',lang=lang)
+        self.nlp = stanza.Pipeline(lang=lang, processors='tokenize,pos,lemma')
     
     def preprocess(self, text):
         try:
@@ -15,4 +15,3 @@ class Lemmatizer:
             lemma = "nan"
 
         return " ".join(lemma)
-        
