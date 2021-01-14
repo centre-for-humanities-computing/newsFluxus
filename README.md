@@ -23,7 +23,7 @@ $ pip3 install -r requirements.txt
 
 ### GPU acceleration
 
-Currently the requirements file installs `torch` and `torchvision` without support for GPU acceleration. If you want to use your accelerator(-s) comment out `torch` and `torchvision` in the requirements file, uninstall with pip (if relevant), and run `pip3 install torch==1.5.0+cu101 torchvision==0.6.0+cu101 -f https://download.pytorch.org/whl/torch_stable.html` for your desired CUDA version (in this case 10.1).
+Currently the requirements file installs `torch` and `torchvision` without support for GPU acceleration. If you want to use your accelerator(-s) comment out `torch` and `torchvision` in the requirements file, uninstall with pip (if relevant), and run `pip install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio===0.7.2 -f https://download.pytorch.org/whl/torch_stable.html` for your desired CUDA version (in this case >=11.0).
 
 ### Install Mallet
 Clone and install Mallet (plus dependencies)
@@ -48,16 +48,16 @@ Change path the local mallet installation in `src/tekisuto/models/latentsemantic
 ### Download language resources
 ```bash
 $ python downloader.py --langauge <language-code>
-# ex. for Danish langauge resources
+# ex. for Swedish langauge resources
 $ python downloader.py --language da
 ```
-And you will be prompted for location to store data, just use default. To find language codes see [StanfordNLP](https://stanfordnlp.github.io/stanfordnlp/models.html#human-languages-supported-by-stanfordnlp)
+And you will be prompted for location to store data, just use default. To find language codes see [Stanza](https://stanfordnlp.github.io/stanza/available_models.html)
 
-#### Test StanfordNLP Installation
+#### Test Stanza Installation
 ```
->>> import stanfordnlp
+>>> import stanza
 
->>> nlp = stanfordnlp.Pipeline(lang="da")
+>>> nlp = stanza.Pipeline(lang="da")
 >>> doc = nlp("Rap! rap! sagde hun, og så rappede de sig alt hvad de kunne, og så til alle sider under de grønne blade, og moderen lod dem se så meget de ville, for det grønne er godt for øjnene.")
 >>> doc.sentences[0].print_dependencies()
 ```
@@ -80,7 +80,7 @@ $ python python src/signal_extraction.py --model mdl/da_sample_model.pcl
 ### Research use-case
 Requires `matplotlib`
 ```bash
-$ python src/news_uncertainty.py --dataset mdl/da_sample_signal.json --window 63 --figure "fig"
+$ python src/news_uncertainty.py --dataset mdl/da_sample_signal.json --window 7 --figure "fig"
 ```
 resulting visualizations in `fig/`
 
@@ -96,7 +96,8 @@ resulting visualizations in `fig/`
 
 | Edition | Date | Comment |
 | --- | --- | --- |
-| v1 | June 04 2020 | Launch |
+| v1.0 | June 04 2020 | Launch |
+| v1.1 | January 14 2020 | New NLP pipeline |
 
 ## Authors
 Kristoffer L. Nielbo
