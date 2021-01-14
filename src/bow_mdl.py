@@ -82,7 +82,7 @@ def main():
             f.write("{}\n\n".format(topic))
     
     # theta-based representation
-    print("\n[INFO] predicting theta...\n")
+    print("\n[INFO] predicting \u03B8...\n")
     theta = list()
     for i, doc in enumerate(ls.corpus):
         vector = [x[1] for x in ls.model[doc]]

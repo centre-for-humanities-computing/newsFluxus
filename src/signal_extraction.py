@@ -3,7 +3,8 @@
 Driver for extracting the uncertainty model, i.e. time-dependent signal from probabilistic bag-of-words representation representation of newspaper dataset
 
 Parameters:
-    - 
+    - model path to model trained with bow_mdl.py
+    - window: int, window to compute novelty and resonance over (for newspapers 7 days)
 """
 import argparse
 import os
