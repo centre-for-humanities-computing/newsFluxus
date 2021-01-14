@@ -8,7 +8,7 @@ import gensim.corpora as corpora
 from gensim.models import CoherenceModel
 
 class LatentSemantics:
-    def __init__(self, texts, titles=False, k=2, mallet_path="/home/knielbo/mallet-2.0.8/bin/mallet"):
+    def __init__(self, texts, titles=False, k=2, mallet_path="/home/knielbo/Mallet/bin/mallet"):
 
         self.texts = texts
 
