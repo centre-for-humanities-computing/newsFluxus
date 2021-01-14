@@ -48,7 +48,7 @@ Change path the local mallet installation in `src/tekisuto/models/latentsemantic
 ### Download language resources
 ```bash
 $ python downloader.py --langauge <language-code>
-# ex. for Swedish langauge resources
+# ex. for Danish langauge resources
 $ python downloader.py --language da
 ```
 And you will be prompted for location to store data, just use default. To find language codes see [Stanza](https://stanfordnlp.github.io/stanza/available_models.html)
