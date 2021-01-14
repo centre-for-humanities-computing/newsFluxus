@@ -2,6 +2,10 @@
 
 Tool for modelling change and persistence in newspaper content. For an exposition of the underlying method see [Persistent News: The Information Dynamics of Nordic Newspapers](https://centre-for-humanities-computing.github.io/Nordic-Digital-Humanities-Laboratory/portfolio/news_c19_method/) and for design see [News-fluxus design specification](https://github.com/centre-for-humanities-computing/newsFluxus).
 
+Publications:
+
+- K. L. Nielbo, R. B. Baglini, P. B. Vahlstrup, K. C. Enevoldsen, A. Bechmann, and A. Roepstorff, “News Information Decoupling: An Information Signature of Catastrophes in Legacy News Media,” arXiv:2101.02956 [cs].
+
 ## Prerequisites
 
 For running in virtual environment (recommended) and assuming python3.7+ is installed.
