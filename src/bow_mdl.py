@@ -8,10 +8,10 @@ Parameters:
     - bytestore
     - estimate: string, "start stop step", range for k number of latent variables grid search
     - sourcename
-    - verbose 
+    - verbose
 
 EX.
-python bow_mdl.py --dataset ../dat/sample.ndjson --language da --bytestore 100 --estimate "20 50 10" --sourcename politiken --verbose 100 
+python bow_mdl.py --dataset ../dat/sample.ndjson --language da --bytestore 100 --estimate "20 50 10" --sourcename politiken --verbose 100
 
 Note:
 In case of non-probabilistic representations, the divergence/distance measure has to be change in xyz
@@ -30,7 +30,7 @@ from tekisuto.preprocessing import Tokenizer
 from tekisuto.models import LatentSemantics
 
 
-def main():    
+def main():
     # input
     ap = argparse.ArgumentParser(description="[INFO] this is a required preprocessing program for training an newspaper uncertainty model")
     ap.add_argument("-d", "--dataset", required=True, help="path to input dataset")
@@ -49,9 +49,9 @@ def main():
     sw = StopWordFilter(path=os.path.join("res", "stopwords-{}.txt".format(args["language"])))
     #sw = StopWordFilter(language="danish")# using NLTK's stopwords
     le = Lemmatizer(lang=args["language"])
-    dl = DatasetLoaderNdjson(preprocessors=[cf,re0,re1,sw,le])
+    dl = DatasetLoaderNdjson(preprocessors=[re0,re1,sw,le,cf])
     data, _, dates = dl.load(args["dataset"], datesort=True, verbose=args["verbose"], bytestore=args["bytestore"])
-    
+
     # clean up byte stream backup storage from dataloader
     if os.path.isfile("dataloader_bytestorage.pcl"):
         os.remove("dataloader_bytestorage.pcl")
@@ -69,18 +69,18 @@ def main():
         ls = LatentSemantics(tokens)
         k, _ = ls.coherence_k(krange=list(range(grid[0],grid[1],grid[2])))
         print("[INFO] optimal number of topics: {}".format(k))
-        ls = LatentSemantics(tokens, k=k)# TODO: store models 
+        ls = LatentSemantics(tokens, k=k)# TODO: store models
     # defalut value
     else:
         ls = LatentSemantics(tokens, k=25)# change to your preferred default value
     ls.fit()
-    
+
     # static semantic content for model summary
     print("\n[INFO] writing content to file...\n")
     with open(os.path.join("mdl", "{}_{}_content.txt".format(args["language"], args["sourcename"])), "w") as f:
         for topic in ls.model.show_topics(num_topics=-1, num_words=10):
             f.write("{}\n\n".format(topic))
-    
+
     # theta-based representation
     print("\n[INFO] predicting \u03B8...\n")
     theta = list()
@@ -100,6 +100,6 @@ def main():
     out["dates"] = dates
     with open(os.path.join("mdl", "{}_{}_model.pcl".format(args["language"], args["sourcename"])), "wb") as f:
         pickle.dump(out, f, protocol=pickle.HIGHEST_PROTOCOL)
-    
+
 if __name__=="__main__":
     main()
