@@ -15,8 +15,12 @@ from tekisuto.models import InfoDynamics
 from tekisuto.metrics import jsd
 
 
+args = dict()
+args['model'] = "../mdl/speech_topic_dist.pcl"
+
 def main():
     # input
+    print(os.getcwd())
     ap = argparse.ArgumentParser(description="[INFO] signal extraction for the uncertainty model")
     ap.add_argument("-m", "--model", required=True, help="path to serialized input model")
     ap.add_argument("-w", "--window", required=False, type=int, default=3, help="window to compute novelty and resonance over")
