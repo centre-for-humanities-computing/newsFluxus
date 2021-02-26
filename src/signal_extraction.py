@@ -14,10 +14,6 @@ import re
 from tekisuto.models import InfoDynamics
 from tekisuto.metrics import jsd
 
-
-args = dict()
-args['model'] = "../mdl/speech_topic_dist.pcl"
-
 def main():
     # input
     print(os.getcwd())

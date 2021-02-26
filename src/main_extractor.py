@@ -37,7 +37,12 @@ def preprocess_for_topic_models(lemmas: list, lang="da"):
     cf = CaseFolder(lower=True)
     re0 = RegxFilter(pattern=r"\W+")
     re1 = RegxFilter(pattern=r"\d+")
-    sw = StopWordFilter(path=os.path.join("res", f"stopwords-{lang}.txt"))
+    if lang in ["da", "fi", "no", "sv"]:
+        sw = StopWordFilter(path=os.path.join("res", f"stopwords-{lang}.txt"))
+    else:
+        if lang == "en":
+            lang = "english"
+        sw = StopWordFilter(lang)
     processors = [cf, re0, re1, sw]
     for processor in processors:
         lemmas = [processor.preprocess(t) for t in lemmas]
@@ -86,7 +91,7 @@ def extract_novelty_resonance(df, theta, dates, window):
     return df
 
 if __name__ == '__main__':
-    IN_PATH = os.path.join("dat", "speeches_all_metrics.csv")
+    IN_PATH = os.path.join("../dat", "speeches_all_metrics.csv")
     OUT_PATH = os.path.join("dat", "speeches_all_metrics_theta.csv")
     ESTIMATE_TOPIPCS = True # whether to tune multiple topic model sizes
     TOPIC_TUNE = [10, 30, 50, 80, 100] # number of topics to tune over in topic model
@@ -105,8 +110,6 @@ if __name__ == '__main__':
         # you might need to download the model:
         # python -m spacy download en_core_web_lg
 
-    # Loading the dataset containing all metrics as non-danish speeches
-    # have been removed
     df = pd.read_csv(IN_PATH)
     # sorting date in descending order for correct calculation
     # of novelty and resonance
