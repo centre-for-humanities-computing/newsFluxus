@@ -34,33 +34,31 @@ class Query:
                 query_pattern,
                 date_start,
                 date_end,
+                condition_pattern=None,
                 subset_tag=None,
                 export_parent_dir=None,
-                export_datatype='ndjson',
                 filefinding_pattern=None,
                 folderfinding_pattern=None,
                 fields_to_match=None,
-                fields_to_export=None,
-                condition_pattern=None) -> None:
+                limited_export=False) -> None:
         
         # FIELDS
         self.fields_to_match = self.validate_match_fields(fields_to_match)
-        if fields_to_export:
-            # None = all filed exported
-            # TODO this is a bit bogus
-            self.fields_to_export = self.validate_match_fields(fields_to_export)
+        if limited_export:
+            self.limited_export = self.validate_match_fields(limited_export)
         else:
-            self.fields_to_export = None
+            self.limited_export = False
 
         # DATES
         self.date_start = self.parse_str_date(date_start)
         self.date_end = self.parse_str_date(date_end)
-        # bool: hourly resolution of query?
+            # bool: hourly resolution of query?
         self.finegrained_dates = self.is_finegrained_time()
 
         # REGEX
+            # main pattern
         self.query_pattern = query_pattern
-
+            # conditional pattern
         if condition_pattern:
             self.condition_pattern = condition_pattern
         else:
@@ -345,7 +343,7 @@ class Query:
         Select fields to export.
         '''
         return [
-            {key: article[key] for key in self.fields_to_export}
+            {key: article[key] for key in self.limited_export}
             for article in file
             ]
 
@@ -515,7 +513,7 @@ class InfoMediaQuery(Query):
         match = self.extract_matched(file, extract_list)
 
         # curb content if desiderd
-        if self.fields_to_export:
+        if self.limited_export:
             match = self.get_content_for_export(match)
 
         return match
