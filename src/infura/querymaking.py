@@ -9,6 +9,9 @@ If your data is in multiple folders:
 - and you want to save subset in a single file
 - and you want to save subset in one file per folder
 - and you want to keep the original file structure
+
+IDEA
+another regex pattern for filtering file paths (that way some newspapers can be removed)
 '''
 # %%
 
@@ -16,7 +19,6 @@ import os
 import re
 import glob
 import datetime
-import warnings
 
 import ndjson
 import numpy as np
@@ -24,6 +26,8 @@ from tqdm import tqdm
 from mdutils.mdutils import MdUtils
 from ciso8601 import parse_datetime_as_naive, parse_datetime
 # probalby need to swtich to parse_datetime once UK/US newspapers start coming in
+
+from .util import resolve_path
 
 # %%
 class Query:
@@ -34,13 +38,39 @@ class Query:
                 query_pattern,
                 date_start,
                 date_end,
+                paths=None,
+                paths_pattern=False,
                 condition_pattern=None,
-                subset_tag=None,
-                export_parent_dir=None,
-                filefinding_pattern=None,
-                folderfinding_pattern=None,
+                export_dir=None,
                 fields_to_match=None,
                 limited_export=False) -> None:
+        '''Generic query settings
+
+        Parameters
+        ----------
+        query_pattern : re.Pattern
+            Regex pattern to look for in the texts
+        date_start : str
+            When to start matching (this date included).
+            Format: so that `parse_datetime` can make sense of it.
+            e.g. YYYY-MM-DD
+        date_end : str
+            When to stop matching (this date included).
+            Same format considerations as `date_start`.
+        paths : list|str, optional
+            List of paths, or a file-finding glob pattern, by default None
+        paths_pattern : bool, optional
+            Is `paths` a filefinding pattern By default False
+        condition_pattern : re.Pattern, optional
+            Regex pattern to look for in adition to `query_pattern`, by default None
+        export_dir : str, optional
+            Path to directory where subset is to be saved, by default None
+        fields_to_match : list|tuple, optional
+            Names of fields where to run regex, by default None
+        limited_export : bool|list|tuple, optional
+            Pick only some fields to export? By default False.
+            Specify field names to export if True.
+        '''
         
         # FIELDS
         self.fields_to_match = self.validate_match_fields(fields_to_match)
@@ -65,48 +95,35 @@ class Query:
             self.condition_pattern = None
 
         # input dataset (paths)
+        if paths_pattern:
+            paths = glob.glob(paths)
+
+        else:
+            paths = self.validate_paths(paths)
+        
         # making sure they are sorted
-        if filefinding_pattern:
-            # TODO resolve?
-            self.paths = sorted(glob.glob(filefinding_pattern))
-            self.paths_to_process = self.get_paths_timeframe(self.paths)
-
-        if folderfinding_pattern:
-            # TODO validate only folders are in the mix
-            self.folders = sorted(glob.glob(folderfinding_pattern))
-
-
-        # exportation
-        # TODO
-        # keep track of desired datatype
-        # and make it possible to do multiple datatypes?!
+        paths = self.validate_paths(paths)
+        self.paths = sorted(paths)
 
         # output paths
-        if export_parent_dir:
-            self.parent_dir = self.resolve_path(export_parent_dir)
-            if subset_tag:
-                # if tag was provided, make sure it's a string, then save
-                self.subset_tag = self.validate_string(subset_tag)
-            self.subset_dir = self.name_subset_dir()
-            # create output directory
-            self.create_folder(self.subset_dir)
-            self.subset_data_dir = os.path.join(self.subset_dir, 'subset_data')
-            self.create_folder(self.subset_data_dir)
+        if export_dir:
+            self.export_dir = resolve_path(export_dir)
 
 
     # INPUT VALIDATION
-    def validate_filefinding_paths(self, path_list) -> list:
+    @staticmethod
+    def validate_paths(path_list) -> list:
         '''
         Make sure paths exist and are a list (iterable).
         '''
         # FIXME unsmooth checking for empty
         if not path_list:
-            raise ValueError('No files to process found! Check path patterns in input.')
+            raise ValueError('No files to process found! Check `paths` in input.')
 
         if isinstance(path_list, str):
             path_list = [path_list]
         
-        path_list = [self.resolve_path(path) for path in path_list]
+        path_list = [resolve_path(path) for path in path_list]
 
         return path_list
 
@@ -117,6 +134,7 @@ class Query:
         Parse str to datetime.datetime
         '''
         return parse_datetime_as_naive(str_date)
+
     
     def is_finegrained_time(self) -> bool:
         '''
@@ -135,31 +153,13 @@ class Query:
             return True
 
     @staticmethod
-    def parse_path_date(path, pattern) -> datetime.datetime:
-        '''
-        Parse dates in filename.
-
-        Parameters
-        ----------
-        path : str
-            Path to a file from IM's database
-
-        pattern : `re.Pattern`
-            Pattern made using self.path_date_pattern()
-        ''' 
-        date_match = pattern.search(path)
-        fdate = parse_datetime_as_naive(date_match.group())
-
-        return fdate
-
-    @staticmethod
     def validate_match_fields(fields_to_match) -> tuple:
         '''
         Turns inputed match_fields into a tuple for faster runing.
 
         TODO 
         - correct another datatypes?
-        - check if they are in the dataset
+        - check if they are in the dataset (that would mean moving this method to another class)
             - might have to load a sample of the dataset to check
         '''
         if isinstance(fields_to_match, list):
@@ -167,23 +167,7 @@ class Query:
         
         return fields_to_match
 
-    # REGEX
-    @staticmethod
-    def path_date_pattern(folder_year=True) -> re.Pattern:
-        '''
-        Compile regex pattern for extracting dates from paths.
-
-        True: yyyy (a folder's name) in path 
-        False: yyyy-mm-dd (part of a filename.ndjson) in path
-
-        Probably specific to infomedia file structure.
-        '''
-        if folder_year:
-            return re.compile(r'(?<=/)\d{4}(?=/)')
-        else:
-            return re.compile(r'\d{4}-\d{2}-\d{2}')
-
-    # PATH MANIPULATION
+    # GENERIC PATH MANIPULATION
     @staticmethod
     def validate_string(string) -> str:
         if not isinstance(string, str):
@@ -192,58 +176,28 @@ class Query:
         return string
 
     @staticmethod
-    def resolve_path(path) -> str:
-        if os.path.exists(path):
-            return path
-        else:
-            raise FileNotFoundError('path not found `{}`'.format(path))
+    def folder_to_fname(path, ext=None) -> str:
+        '''Get the name of the deepest object in a file path.
 
-    @staticmethod
-    def folder_to_fname(folder_path, ext='ndjson') -> str:
-        '''
-        From a path to folder, get the name of the deepest folder.
-        If `ext` is specified, add a file extension to the name.  
-
-        TODO 
-        - ext should be T/F and get particulat file extension from export_datatype!
+        Parameters
+        ----------
+        path : str
+            A path to file or folder
+        ext : str, optional
+            If specified, add a file extension to extracted name, by default None
         '''
         if ext:
-            return os.path.basename(os.path.normpath(folder_path)) + '.' + ext
+            return os.path.basename(os.path.normpath(path)) + '.' + ext
         else:
-            return os.path.basename(os.path.normpath(folder_path)) 
+            return os.path.basename(os.path.normpath(path)) 
 
-    def name_subset_dir(self) -> str:
-        # add timestamp to outfolder
-        yymmddhhmm = datetime.datetime.now().strftime('%y%m%d%H%M')
-
-        # subset flags
-        # could be that here processing flags could be automatically detected
-
-        folder_name = yymmddhhmm + '_' + self.subset_tag
-        outpath = os.path.join(self.parent_dir, folder_name)
-
-        return outpath
-
-    @staticmethod
-    def create_folder(fpath) -> None:
-        '''
-        TODO
-        - confirm saving path?
-        '''
-        # check if folder already exists and prevent overwriting!
-        if not os.path.exists(fpath):
-            os.makedirs(fpath)
-        else:
-            raise FileExistsError('path already exists {}'.format(fpath))
-
-
-    # EXTRACTION METHODS
+    # GENERIC EXTRACTION METHODS
     @staticmethod
     def dated(date, date_start, date_end) -> bool:
         '''date within range?
         '''
         return date >= date_start and date <= date_end
-    
+
     @staticmethod
     def matched(text, pattern) -> bool:
         '''pattern detected?
@@ -269,7 +223,7 @@ class Query:
         Parameters
         ----------
         list1, list2 : bool
-            list of bool of the same length
+            lists of bool of the same length
         '''
         assert len(list1) == len(list2)
 
@@ -282,8 +236,67 @@ class Query:
         else:
             return None
 
-    # FILTERING
-    ## DATE based
+
+    # I/O
+    @staticmethod
+    def load_ndjson(path) -> list:
+        # convenience function for loading 1 path
+        with open(path) as fin:
+            return ndjson.load(fin)
+
+    @staticmethod
+    def export_ndjson(dobj, outpath) -> None:
+        # convenience function for exporting 1 object
+        with open(outpath, 'w') as fout:
+            ndjson.dump(dobj, fout)
+
+
+class InfoMediaQuery(Query):
+    '''
+    File loop
+    Folder loop
+    Dataset loop
+    '''
+    
+    # TODO look into __new__ or __init_subclass__
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+
+
+    # INFOMEDIA PATH MANIPULATION METHODS
+    @staticmethod
+    def parse_path_date(path, pattern) -> datetime.datetime:
+        '''
+        Parse dates in filename.
+
+        Parameters
+        ----------
+        path : str
+            Path to a file from IM's database
+
+        pattern : `re.Pattern`
+            Pattern made using self.path_date_pattern()
+        ''' 
+        date_match = pattern.search(path)
+        fdate = parse_datetime_as_naive(date_match.group())
+
+        return fdate
+    
+    @staticmethod
+    def path_date_pattern(folder_year=True) -> re.Pattern:
+        '''
+        Compile regex pattern for extracting dates from paths.
+
+        True: yyyy (a folder's name) in path 
+        False: yyyy-mm-dd (part of a filename.ndjson) in path
+
+        Probably specific to infomedia file structure.
+        '''
+        if folder_year:
+            return re.compile(r'(?<=/)\d{4}(?=/)')
+        else:
+            return re.compile(r'\d{4}-\d{2}-\d{2}')
+
     def flag_paths_matching_date(self, path_list) -> list:
         '''
         We don't need to open some files.
@@ -307,24 +320,17 @@ class Query:
         date_list = [parse_datetime_as_naive(article[field]) for article in file]
         return [self.dated(date, self.date_start, self.date_end) for date in date_list]
 
-    
     def get_paths_timeframe(self, path_list) -> list:
         '''
         Return a list of str (paths).
         '''
-        # TODO this where I wanted to check for sorted paths 
-        # select folders
-        flags_files = self.flag_paths_matching_date(
-            path_list
-            )
-
+        # TODO do we really need this method? 
+        flags_files = self.flag_paths_matching_date(path_list)
         return self.extract_matched(path_list, flags_files)
 
-    ## SOURCE based
-    # TODO
-    # don't open some folders, because it's a newspaper we don't want.
 
-    ## CONTENT based
+    # INFOMEDIA FIELD MANIPULATION METHODS
+    # applicable for all dictionaries as well
     # TODO better KeyError when field is not found in the dataset
     def get_content_from_match_fields(self, file) -> list:
         '''
@@ -348,125 +354,7 @@ class Query:
             ]
 
 
-    # I/O
-    ## IMPORT
-    @staticmethod
-    def load_file(path) -> list:
-        '''
-        Imports ndjson file corresponding to one day of content from one source.
-
-        TODO 
-        benchmark compare with generators loading (ndjson.reader)
-        '''
-        with open(path) as fin:
-            file = ndjson.load(fin)
-
-        return file
-
-    ## EXPORT
-    @staticmethod
-    def export_ndjson(dobj, outpath) -> None:
-        '''
-        '''
-        # TODO benchmark ndjson.reader
-        with open(outpath, 'w') as fout:
-            ndjson.dump(dobj, fout)
-
-    @staticmethod
-    def export_csv(dobj, outpath) -> None:
-        '''
-        '''
-        pass
-
-    # README
-    def create_readme(self, maximal=False) -> None:
-        '''Generates a markdown readme file.
-        Saved into the subset directory.
-
-        Parameters
-        ----------
-        maximal : bool
-            If maximal readme is desired,
-            articles will be counted.
-        '''
-        if self.subset_tag:
-            subset_tag = self.subset_tag
-        else:
-            subset_tag = 'subset'
-
-        # create
-        readme = MdUtils(
-            file_name= os.path.join(self.subset_dir, 'readme_' + subset_tag),
-            title=subset_tag
-            )
-
-        # produce content
-        date_generated = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        str_date_start = self.date_start.strftime('%Y-%m-%d %H:%M:%S')
-        str_date_end = self.date_end.strftime('%Y-%m-%d %H:%M:%S')
-
-        # SECTION 1: DATE GENERATED
-        readme.new_header(level=1, title='Date', style='setext')
-        readme.new_paragraph(date_generated)
-
-        # SECTION 2: SUBSET DESCRIPTION
-        readme.new_header(level=1, title='Description', style='setext')
-        # start date, end date
-        readme.new_line(
-            'Articles from {} to {}'
-            .format(str_date_start, str_date_end)
-        )
-
-        # regex patterns for query
-        readme.new_line(
-            'Regex pattern of *query*: ``{}``'
-            .format(self.query_pattern)
-            )
-        # regex pattern for condition
-        if self.condition_pattern:
-            readme.new_line(
-                'Regex pattern of *condition*: ``{}``'
-                .format(self.condition_pattern)
-                )
-
-        # SECTION 3: SOURCE
-        # # TODO
-        # if self.filefinding_pattern:
-        #     pass
-
-        # if self.folderfinding_pattern:
-        #     pass
-
-        if maximal:
-            pass
-            # generate tally content
-            # TODO - maybe too complicated?
-
-            # table_contet = [
-            #     'Number of Days', ''
-            #     'Number of Articles', '',
-            #     'Number of Media Houses', '',
-            #     'Avg Articles per Media House', ''
-            # ]
-
-            # SECTION 4: TABLE OF DETAILS
-            # readme.new_header(level=1, title='Setext Header 1', style='setext')
-            # readme.new_table(columns=2, rows=4, text=table_contet, text_align='left')
-
-        readme.create_md_file()
-
-
-class InfoMediaQuery(Query):
-    '''
-    File loop
-    Folder loop
-    Dataset loop
-    '''
-    
-    # TODO look into __new__ or __init_subclass__
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
-
+    # INFOMEDIA SUBSET MAKING METHODS
     # (1) FILE LOOP
     def process_filepath(self, path) -> list:
         '''
@@ -480,10 +368,7 @@ class InfoMediaQuery(Query):
         path : str
             path to file to process.
         '''
-        # import ndjson
-        # TODO
-        # check for empty files?
-        file = self.load_file(path)
+        file = self.load_ndjson(path)
 
         # get content from a file
         file_content = self.get_content_from_match_fields(file)
@@ -495,16 +380,11 @@ class InfoMediaQuery(Query):
             # if condition is desired, regex-match condition
             condition_matched = self.flag_matched_articles(
                 file_content,
-                self.condition_pattern
-                )
+                self.condition_pattern)
             # both query & condition must be True
-            # FIXME delete test cases
-            self.test_extract_list = extract_list
-            self.test_condition_matched = condition_matched
             extract_list = self.find_mutual_trues(extract_list, condition_matched)
 
         # extra layer of processsing if dates are finegrained
-        # FIXME untested
         if self.finegrained_dates:
             dates_matched = self.flag_articles_matching_date(file)
             extract_list = self.find_mutual_trues(extract_list, dates_matched)
@@ -521,7 +401,7 @@ class InfoMediaQuery(Query):
 
     # (2) FOLDER LOOP
     # abstraction 1: EVERYTHING IN A SINGLE FILE
-    def collect_subset_in_list(self, paths_to_process, progress_bar=False) -> list:
+    def collect_subset_in_list(self, paths, progress_bar=True) -> list:
         '''
         Input paths, export all matches into a single file.
 
@@ -530,20 +410,20 @@ class InfoMediaQuery(Query):
 
         Parameters
         ----------
-        paths_to_process : str|list
-            List of filepaths to run
+        paths : list, optional
+            List of filepaths to run.
+            If None is specified, self.paths is used.
+
+        progress_bar : bool, optional
+            Show progress bar? By default False.
         '''
-        # # TODO 
-        # # dates are taked directly from init by the method
-        # paths_to_process = self.get_paths_timeframe(
-        #     self.paths
-        # )
 
-        # TODO
-        # - paths_to_process should be the point where we paralelize.
-        #     - I was hoping they would be initialized somewhere else..
+        # take paths from init if nothing is specified
+        if not paths:
+            paths = self.paths
 
-        paths_to_process = self.validate_filefinding_paths(paths_to_process)
+        # dates are taked directly from init by the method
+        paths_to_process = self.get_paths_timeframe(paths)
 
         # Instantiate progres bar
         if progress_bar:
@@ -562,22 +442,25 @@ class InfoMediaQuery(Query):
 
 
     # abstraction 2: EXPORT TO INDIVIDUAL FOLDER (NEWSPAPER) FILES
-    def collect_in_media_folder(self,
-        folders_to_process, one_year_folder=False, progress_bar=False) -> None:
+    def collect_in_media_folder(self, one_year_folder=False, progress_bar=True) -> None:
         '''
         Input folder paths (not filepaths).
-
-        Returns nothing, saves files straight to self.subset_data_dir.
+        Returns nothing, saves files straight to self.export_dir.
 
         Parameters
         ----------
-        folders_to_process : str|list
-            List of directories to go into and collect
-        
-        one_year_folder : bool
+        one_year_folder : bool, optional
             True is when using a yearly subset {one media folder}/{all ndjson files}
             Flase is when using IM database {one media folder}/{any year}/{all ndjson files}
+
+        progress_bar : bool, optional
+            Show progress bar? By default False.
         '''
+
+        # test if all paths are folders
+        assert all([os.path.isdir(path) for path in self.paths])
+        folders_to_process = self.paths
+
         if progress_bar:
             folders_to_process = tqdm(folders_to_process)
 
@@ -590,13 +473,13 @@ class InfoMediaQuery(Query):
                     # {one media folder}/{all ndjson files}
                     os.path.join(folder, '*.ndjson')
                     )
-                
+
             else:
                 paths_within_folder = glob.glob(
                     # {one media folder}/{any year}/{all ndjson files}
                     os.path.join(folder, '*', '*.ndjson')
                     )
-            
+
             # time filtering
             paths_to_process = self.get_paths_timeframe(
                 paths_within_folder
@@ -613,35 +496,12 @@ class InfoMediaQuery(Query):
             if media_folder_subset:
                 # filename for folder subset
                 fname = self.folder_to_fname(folder)
-                outpath = os.path.join(self.subset_data_dir, fname)
+                outpath = os.path.join(self.export_dir, fname)
 
                 # resolve outpath & export
-                if not os.path.exists(outpath):
-                    self.export_ndjson(media_folder_subset, outpath=outpath)
-                
-                else:
-                    warnings.warn('{} already exists! Overwriting content!'.format(outpath))
+                try:
+                    if not os.path.exists(outpath):
+                        self.export_ndjson(media_folder_subset, outpath=outpath)
 
-
-
-    # # abstraction 3: EXPORT TO ORIGINAL FILE STRUCTURE
-    # def collect_in_original_filestructure(paths_to_process, fields_to_match, query_pattern, condition_pattern):
-    #     '''
-    #     Input paths, export all matches into files with the same 
-    #     resolution as IM database
-
-    #     Parameters
-    #     ----------
-    #     paths_to_process : str|list
-    #         List of filepaths to run
-    #     '''
-    #     for path in tqdm(paths_to_process):
-    #         file_subset = process_filepath(
-    #             path,
-    #             fields_to_match,
-    #             query_pattern,
-    #             condition_pattern
-    #             )
-            
-    #         export_ndjson(file_subset, outpath=None)
-
+                except:
+                    raise FileExistsError('{} already exists! Overwriting content!'.format(outpath))

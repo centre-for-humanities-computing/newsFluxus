@@ -7,6 +7,8 @@ import datetime
 
 from mdutils.mdutils import MdUtils
 
+from .util import resolve_path
+
 # %%
 # class for making the 
 class FileStructure:
@@ -39,7 +41,7 @@ class FileStructure:
         elif parent_dir:
             # if user wants a work_dir to be made
             # assumes you already have a parent_dir
-            self.parent_dir = self.resolve_dir(parent_dir)
+            self.parent_dir = resolve_path(parent_dir)
 
             if custom_name:
                 # user wants custom work_dir name
@@ -63,12 +65,6 @@ class FileStructure:
                 self.work_dir_path = work_dir_path
             else:
                 raise FileExistsError('{} already exists!'.format(work_dir_path))
-        
-
-    @staticmethod
-    def resolve_dir(path):
-        if os.path.exists(path):
-            return path
 
 
     def gendir_work(self) -> None:
@@ -76,33 +72,19 @@ class FileStructure:
             os.mkdir(self.work_dir_path)
     
     @staticmethod
-    def gendir_sub(self, parent_name, child_name) -> None:
+    def gendir_sub(parent_path, child_name) -> None:
         # generate a child directory in word_dir
-        subdir_path = os.path.join(parent_name, child_name) 
+        subdir_path = os.path.join(parent_path, child_name) 
         os.mkdir(subdir_path)
-
-    
-    def gendir_maximal_setup(self) -> None:
-        '''creates a bunch of folders for the whole analysis
-        '''
-        # create a working directory
-        self.gendir_work()
-
-        # generate top level childs
-        top_childs = ['data_subset', 'preprocessed', 'model_input', 'mdl_lda', 'mdl_ntr']
-        for folder in top_childs:
-            self.gendir_sub(self.work_dir_path, folder)
-        
-        # generate mdl_lda childs
-        mdl_lda_childs = ['model_states', 'topic_overviews', 'doc_top_mat', 'pyldavis']
-        for folder in mdl_lda_childs:
-            self.gendir_sub(os.path.join(self.work_dir_path, 'mdl_lda'), folder)
-        
-        self.create_readme()
 
 
     def create_readme(self):
         '''saves a .md file with descritption of a maximal setup
+
+        TODO
+        minimal readme just for subset making
+            - n articles
+            - regex patterns used for subsetting
         '''
 
         readme = MdUtils(
@@ -149,6 +131,35 @@ class FileStructure:
         readme.new_line()
 
         readme.create_md_file()
+
+
+    def gendir_maximal_setup(self) -> None:
+        '''creates a bunch of folders for the whole analysis
+        '''
+        # create a working directory
+        self.gendir_work()
+
+        # generate top level childs
+        top_childs = ['data_subset', 'preprocessed', 'model_input', 'mdl_lda', 'mdl_ntr']
+        for folder in top_childs:
+            self.gendir_sub(
+                parent_path=self.work_dir_path,
+                child_name=folder
+                )
+        
+        # generate mdl_lda childs
+        mdl_lda_childs = ['model_states', 'topic_overviews', 'doc_top_mat', 'pyldavis']
+        for folder in mdl_lda_childs:
+            self.gendir_sub(
+                parent_path=os.path.join(self.work_dir_path, 'mdl_lda'),
+                child_name=folder
+                )
+        
+        self.create_readme()
+
+    def gendir_minimal_setip(self) -> None:
+        # transfer minimal folders and readme from querymaking.py
+        pass
 
     # # UNFINNISHED BULLSHIT
     # def gendir_subset_manyfiles(self):
