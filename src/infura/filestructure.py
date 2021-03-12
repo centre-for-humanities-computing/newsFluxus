@@ -10,7 +10,9 @@ from mdutils.mdutils import MdUtils
 from .util import resolve_path
 
 # %%
-# class for making the 
+# class for making the
+
+
 class FileStructure:
     def __init__(self, parent_dir=None, work_dir=None, custom_name=False) -> None:
         '''[summary]
@@ -36,8 +38,8 @@ class FileStructure:
         if not parent_dir:
             # if user already has a work_dir, just validate and save the path
             if os.path.exists(work_dir):
-                self.work_dir_path = work_dir 
-        
+                self.work_dir_path = work_dir
+
         elif parent_dir:
             # if user wants a work_dir to be made
             # assumes you already have a parent_dir
@@ -64,19 +66,18 @@ class FileStructure:
             if not os.path.exists(work_dir_path):
                 self.work_dir_path = work_dir_path
             else:
-                raise FileExistsError('{} already exists!'.format(work_dir_path))
-
+                raise FileExistsError(
+                    '{} already exists!'.format(work_dir_path))
 
     def gendir_work(self) -> None:
         if not os.path.exists(self.work_dir_path):
             os.mkdir(self.work_dir_path)
-    
+
     @staticmethod
     def gendir_sub(parent_path, child_name) -> None:
         # generate a child directory in word_dir
-        subdir_path = os.path.join(parent_path, child_name) 
+        subdir_path = os.path.join(parent_path, child_name)
         os.mkdir(subdir_path)
-
 
     def create_readme(self):
         '''saves a .md file with descritption of a maximal setup
@@ -88,9 +89,9 @@ class FileStructure:
         '''
 
         readme = MdUtils(
-            file_name= os.path.join(self.work_dir_path, 'README'),
+            file_name=os.path.join(self.work_dir_path, 'README'),
             title='Subset readme'
-            )
+        )
 
         # produce content
         date_generated = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -121,8 +122,10 @@ class FileStructure:
         readme.new_line('│   │   └── *.ndjson')
         readme.new_line('│   ├── pyldavis/  #pyldavis plots')
         readme.new_line('│   │   └── *.html')
-        readme.new_line('│   └── model_comparison.png  #elbow plot of n topics and coherence')
-        readme.new_line('└── mdl_ntr/  #outputs of Novelty, Transience, Resonance')
+        readme.new_line(
+            '│   └── model_comparison.png  #elbow plot of n topics and coherence')
+        readme.new_line(
+            '└── mdl_ntr/  #outputs of Novelty, Transience, Resonance')
         readme.new_line('    └── w{number}/  #results at window n')
         readme.new_line('        ├── *.csv')
         readme.new_line('        └── fig/  #plots of results at that window')
@@ -132,7 +135,6 @@ class FileStructure:
 
         readme.create_md_file()
 
-
     def gendir_maximal_setup(self) -> None:
         '''creates a bunch of folders for the whole analysis
         '''
@@ -140,21 +142,23 @@ class FileStructure:
         self.gendir_work()
 
         # generate top level childs
-        top_childs = ['data_subset', 'preprocessed', 'model_input', 'mdl_lda', 'mdl_ntr']
+        top_childs = ['data_subset', 'preprocessed',
+                      'model_input', 'mdl_lda', 'mdl_ntr']
         for folder in top_childs:
             self.gendir_sub(
                 parent_path=self.work_dir_path,
                 child_name=folder
-                )
-        
+            )
+
         # generate mdl_lda childs
-        mdl_lda_childs = ['model_states', 'topic_overviews', 'doc_top_mat', 'pyldavis']
+        mdl_lda_childs = ['model_states',
+                          'topic_overviews', 'doc_top_mat', 'pyldavis']
         for folder in mdl_lda_childs:
             self.gendir_sub(
                 parent_path=os.path.join(self.work_dir_path, 'mdl_lda'),
                 child_name=folder
-                )
-        
+            )
+
         self.create_readme()
 
     def gendir_minimal_setip(self) -> None:
@@ -169,14 +173,13 @@ class FileStructure:
     # def gendir_subset_singlefile(self):
     #     # dir to host output of Query in a single file
     #     pass
-        
 
     # def gendir_preprocessing(self):
     #     # dir to host output of preprocessing
     #     pass
 
     # def gendir_grouped_files(self):
-    #     # dir to host input data for preprocessing 
+    #     # dir to host input data for preprocessing
     #     pass
 
     # def gendir_topics(self):
@@ -191,6 +194,6 @@ class FileStructure:
     #     pass
 
     # def gen_driver_py(self):
-    #     # generate a python script, for the analysis, 
+    #     # generate a python script, for the analysis,
     #     # where user can play around with the parameters
     #     pass
