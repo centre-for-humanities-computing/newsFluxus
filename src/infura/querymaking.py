@@ -27,7 +27,7 @@ from mdutils.mdutils import MdUtils
 from ciso8601 import parse_datetime_as_naive, parse_datetime
 # probalby need to swtich to parse_datetime once UK/US newspapers start coming in
 
-from .util import resolve_path
+from .util import resolve_path, flag_fuzzy_duplicates
 
 # %%
 class Query:
@@ -213,6 +213,7 @@ class Query:
     def extract_matched(base_list, flag_list) -> list:
         '''returns a list of content (e.g. dict) 
         '''
+        assert len(base_list) == len(flag_list)
         return [x for i, x in enumerate(base_list) if flag_list[i]]
 
     @staticmethod
@@ -356,7 +357,7 @@ class InfoMediaQuery(Query):
 
     # INFOMEDIA SUBSET MAKING METHODS
     # (1) FILE LOOP
-    def process_filepath(self, path) -> list:
+    def process_filepath(self, path, remove_duplicates=False) -> list:
         '''
         Extract matched articles from one file
 
@@ -437,7 +438,7 @@ class InfoMediaQuery(Query):
             if file_subset:
                 # extend because self.extract_matched() returned a list already
                 all_matched.extend(file_subset)
-        
+                
         return all_matched
 
 
@@ -491,7 +492,7 @@ class InfoMediaQuery(Query):
                 # turn progress bar off
                 progress_bar=False
                 )
-            
+
             # don't export empties!
             if media_folder_subset:
                 # filename for folder subset
@@ -505,3 +506,29 @@ class InfoMediaQuery(Query):
 
                 except:
                     raise FileExistsError('{} already exists! Overwriting content!'.format(outpath))
+
+    def remove_duplicates(self, export_dir):
+        # BAREBONES, UNSMOOTH
+
+        # find all files generated
+        pattern = os.path.join(self.export_dir, '*.ndjson')
+        exported_paths = glob.glob(pattern)
+
+        for path in tqdm(exported_paths):
+            file = self.load_ndjson(path)
+            body_text = [article['BodyText'] for article in file]
+
+            # get ids of duplicates
+            ids_duplicates = flag_fuzzy_duplicates(
+                body_text,
+            )
+
+            # flip list to get ids to keep
+            ids_non_duplicates = [not el for el in ids_duplicates]
+
+            # keep only non-duplicates
+            match = self.extract_matched(file, ids_non_duplicates)
+
+            # export
+            fname = os.path.basename(path)
+            self.export_ndjson(match, os.path.join(export_dir, fname))
