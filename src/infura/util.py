@@ -30,12 +30,12 @@ def flag_fuzzy_duplicates(input_list, cutoff=93, validate=False):
     Validation: list of tuples, optional
         where tuple[0]: query, [1]: score, [2]: index of duplicate
     '''
+    # list of falses same lengths as input
+    indices = [False] * len(input_list)
+
     if len(input_list) >= 2:
         # only attempt to flag anything if input is sufficient length
 
-        # list of falses same lengths as input
-        indices = [False] * len(input_list)
-        
         if validate:
             # track matches
             validation = []
@@ -59,8 +59,8 @@ def flag_fuzzy_duplicates(input_list, cutoff=93, validate=False):
 
         if validate:
             return indices, validation
-        else:
-            return indices
+
+    return indices
 
 
 # paths

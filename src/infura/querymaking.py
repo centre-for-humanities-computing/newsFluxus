@@ -22,11 +22,13 @@ import datetime
 
 import ndjson
 import numpy as np
+import pandas as pd
 from tqdm import tqdm
 from mdutils.mdutils import MdUtils
 from ciso8601 import parse_datetime_as_naive, parse_datetime
 # probalby need to swtich to parse_datetime once UK/US newspapers start coming in
 
+from tekisuto.preprocessing.regxfilter import RegxFilter
 from .util import resolve_path, flag_fuzzy_duplicates
 
 # %%
@@ -42,6 +44,7 @@ class Query:
                 paths_pattern=False,
                 condition_pattern=None,
                 export_dir=None,
+                export_file_ext='ndjson',
                 fields_to_match=None,
                 limited_export=False) -> None:
         '''Generic query settings
@@ -65,6 +68,8 @@ class Query:
             Regex pattern to look for in adition to `query_pattern`, by default None
         export_dir : str, optional
             Path to directory where subset is to be saved, by default None
+        export_file_ext : str, optional
+            File extension / format to export the results in, by default 'ndjson'
         fields_to_match : list|tuple, optional
             Names of fields where to run regex, by default None
         limited_export : bool|list|tuple, optional
@@ -108,6 +113,9 @@ class Query:
         # output paths
         if export_dir:
             self.export_dir = resolve_path(export_dir)
+        
+        # export format
+        self.file_ext = export_file_ext
 
 
     # INPUT VALIDATION
@@ -176,7 +184,7 @@ class Query:
         return string
 
     @staticmethod
-    def folder_to_fname(path, ext=None) -> str:
+    def basepath_to_name(path, ext=None) -> str:
         '''Get the name of the deepest object in a file path.
 
         Parameters
@@ -189,7 +197,7 @@ class Query:
         if ext:
             return os.path.basename(os.path.normpath(path)) + '.' + ext
         else:
-            return os.path.basename(os.path.normpath(path)) 
+            return os.path.basename(os.path.normpath(path))
 
     # GENERIC EXTRACTION METHODS
     @staticmethod
@@ -250,6 +258,64 @@ class Query:
         # convenience function for exporting 1 object
         with open(outpath, 'w') as fout:
             ndjson.dump(dobj, fout)
+    
+    @staticmethod
+    def load_csv(path) -> pd.DataFrame:
+        # load csv and convert to a list of dicts (standard ndjson format)
+        df = pd.read_csv(path, sep=';')
+        return [row.to_dict() for i, row in df.iterrows()]
+    
+    @staticmethod
+    def export_csv(dobj, outpath) -> None:
+        # convert standard ndjson format to df, export as csv
+        df = pd.DataFrame(dobj)
+        df.to_csv(outpath, index=False, sep=';')
+
+
+    def export_dobj(self, dobj, outpath) -> None:
+        '''Convert object to a desired format and export it
+        with the right file extension
+
+        Parameters
+        ----------
+        dobj : list or dicts
+            Processing output of Query()
+        outpath : str
+            Path for dumping the object
+
+        Raises
+        ------
+        FileExistsError
+            If desired path already exists
+
+        ValueError
+            If an unknown file extension is called.
+        '''
+
+        # make sure file extension is present
+        if not outpath.endswith('.csv' or '.ndjson'):
+            outpath = outpath + '.' + self.file_ext
+
+        try:
+            # resolve path
+            if not os.path.exists(outpath):
+                pass
+        except:
+            raise FileExistsError('{} already exists! Stoping execution.'.format(outpath))
+
+        # get file extension
+        if self.file_ext == 'ndjson':
+            # export dobj as is
+            self.export_ndjson(dobj, outpath)
+
+        elif self.file_ext == 'csv':
+            # convert dobj to a dataframe and export
+            self.export_csv(dobj, outpath)
+
+        else:
+            # raise error if non-implemented formats are called
+            raise ValueError('`export_file_ext:` Exporting only works in .csv or .ndjson formats')
+        
 
 
 class InfoMediaQuery(Query):
@@ -496,39 +562,67 @@ class InfoMediaQuery(Query):
             # don't export empties!
             if media_folder_subset:
                 # filename for folder subset
-                fname = self.folder_to_fname(folder)
+                fname = self.basepath_to_name(folder, ext=self.file_ext)
                 outpath = os.path.join(self.export_dir, fname)
 
-                # resolve outpath & export
-                try:
-                    if not os.path.exists(outpath):
-                        self.export_ndjson(media_folder_subset, outpath=outpath)
+                # try to export
+                # will fail if ext is not right
+                self.export_dobj(media_folder_subset, outpath)
 
-                except:
-                    raise FileExistsError('{} already exists! Overwriting content!'.format(outpath))
 
-    def remove_duplicates(self, export_dir):
+    def remove_duplicates(self, export_dir, clear_html=False):
         # BAREBONES, UNSMOOTH
 
         # find all files generated
-        pattern = os.path.join(self.export_dir, '*.ndjson')
-        exported_paths = glob.glob(pattern)
+        file_pattern = os.path.join(self.export_dir, '*.' + self.file_ext)
+        exported_paths = glob.glob(file_pattern)
 
+        # regex patterns for html
+        if clear_html:
+            pat_html = RegxFilter(pattern=r"<.*?>") # remove html tags
+            pat_ws = RegxFilter(pattern=r" +") # remove extra spacing to deal with p1 header
+
+        print('[info] Removing duplicates')
         for path in tqdm(exported_paths):
-            file = self.load_ndjson(path)
-            body_text = [article['BodyText'] for article in file]
+            # load correctly
+            # TODO GENERIC LOADER FUNCTION
+            if self.file_ext == 'csv':
+                file = self.load_csv(path)
+            elif self.file_ext == 'ndjson':
+                file = self.load_ndjson(path)
 
-            # get ids of duplicates
-            ids_duplicates = flag_fuzzy_duplicates(
-                body_text,
-            )
+            if file:
+                # don't work on empties
+                body_text = [article['BodyText'] for article in file]
 
-            # flip list to get ids to keep
-            ids_non_duplicates = [not el for el in ids_duplicates]
+                # get ids of duplicates
+                ids_duplicates = flag_fuzzy_duplicates(
+                    body_text,
+                )
 
-            # keep only non-duplicates
-            match = self.extract_matched(file, ids_non_duplicates)
+                # flip list to get ids to keep
+                ids_non_duplicates = [not el for el in ids_duplicates]
 
-            # export
-            fname = os.path.basename(path)
-            self.export_ndjson(match, os.path.join(export_dir, fname))
+                # keep only non-duplicates
+                match = self.extract_matched(file, ids_non_duplicates)
+
+                if clear_html:
+                    # TODO
+                    # clear html belongs in tekisuto!
+                    def remove_html(dict, key):
+                        text = dict[key]
+                        text = pat_html.preprocess(text)
+                        text = pat_ws.preprocess(text)
+                        return text
+                    
+                    print('[info] removing html')
+                    for article in match:
+                        for key in ['Heading', 'SubHeading', 'Paragraph', 'BodyText']:
+                            article[key] = remove_html(article, key)
+
+                # export
+                fname = os.path.basename(path)
+                self.export_dobj(match, os.path.join(export_dir, fname))
+
+            else:
+                pass
