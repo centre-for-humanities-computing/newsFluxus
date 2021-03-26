@@ -105,3 +105,4 @@ venv.bak/
 
 # ad hoc scripts
 **/dev_*.py
+.vscode

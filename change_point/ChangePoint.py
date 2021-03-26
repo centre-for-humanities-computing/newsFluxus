@@ -20,13 +20,16 @@ class ChangePoint:
 
     Intended use case:
     pelt_smoothed = ChangePoint(cp="PELT", smoothing="gaussian_kernel")
-    outcome = pelt_smoothed(timeseries)
+    outcome = pelt_smoothed.fit(timeseries)
 
     Results:
     outcome.plot()
     outcome.summary()
     type(outcome)
     PELTOutput
+
+    bayes = pelt_smoothed(cp="bayesian")
+    bayes.fit(timeseries, change_points=None)
     """
 
     def __init__(self, cp: str = "PELT", smoothing: Optional[str] = "gaussian_kernel"):
