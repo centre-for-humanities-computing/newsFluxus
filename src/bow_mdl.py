@@ -25,10 +25,11 @@ from tekisuto.datasets import DatasetLoaderNdjson
 from tekisuto.preprocessing import CaseFolder
 from tekisuto.preprocessing import RegxFilter
 from tekisuto.preprocessing import StopWordFilter
-from tekisuto.preprocessing import Lemmatizer
+from tekisuto.preprocessing import Lemmatizer, LemmatizerSpacy
 from tekisuto.preprocessing import Tokenizer
 from tekisuto.models import LatentSemantics
 
+lemmatizers = {"stanza": Lemmatizer, "spacy": LemmatizerSpacy}
 
 def main():
     # input
@@ -38,6 +39,7 @@ def main():
     ap.add_argument("-b", "--bytestore", required=False, type=int, default=250, help="frequency for dataloader backup, -1 to deactivate")
     ap.add_argument("-e", "--estimate", required=False, help="estimation mode")
     ap.add_argument("-n", "--sourcename", required=False, default="noname", help="name of the newspaper")
+    ap.add_argument("-m", "--model", required=False, default="spacy", help="The model to use in the preprocessing")
     ap.add_argument("-v", "--verbose", required=False, type=int, default=-1, help="verbose mode (number of object to print), -1 to deactivate")
     args = vars(ap.parse_args())
 
@@ -48,7 +50,9 @@ def main():
     re1 = RegxFilter(pattern=r"\d+")
     sw = StopWordFilter(path=os.path.join("res", "stopwords-{}.txt".format(args["language"])))
     #sw = StopWordFilter(language="danish")# using NLTK's stopwords
-    le = Lemmatizer(lang=args["language"])
+
+    lemmatizer = lemmatizers[args["model"]]
+    le = lemmatizer(lang=args["language"])
     dl = DatasetLoaderNdjson(preprocessors=[re0,re1,sw,le,cf])
     data, _, dates = dl.load(args["dataset"], datesort=True, verbose=args["verbose"], bytestore=args["bytestore"])
 
