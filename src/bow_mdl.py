@@ -39,7 +39,8 @@ def main():
     ap.add_argument("-b", "--bytestore", required=False, type=int, default=250, help="frequency for dataloader backup, -1 to deactivate")
     ap.add_argument("-e", "--estimate", required=False, help="estimation mode")
     ap.add_argument("-n", "--sourcename", required=False, default="noname", help="name of the newspaper")
-    ap.add_argument("-m", "--model", required=False, default="spacy", help="The model to use in the preprocessing")
+    ap.add_argument("-m", "--model", required=False, default="spacy", help="The model to use in the preprocessing.")
+    ap.add_argument("-s", "--spacymodel", required=False, default=None, help="The specific spacy model to use")
     ap.add_argument("-v", "--verbose", required=False, type=int, default=-1, help="verbose mode (number of object to print), -1 to deactivate")
     args = vars(ap.parse_args())
 
@@ -52,7 +53,11 @@ def main():
     #sw = StopWordFilter(language="danish")# using NLTK's stopwords
 
     lemmatizer = lemmatizers[args["model"]]
-    le = lemmatizer(lang=args["language"])
+    if args["spacymodel"] is None:
+        le = lemmatizer(lang=args["language"])
+    else:
+        nlp = spacy.load(args["spacymodel"])
+        le = lemmatizer(lang=args["language"], nlp = nlp)
     dl = DatasetLoaderNdjson(preprocessors=[re0,re1,sw,le,cf])
     data, _, dates = dl.load(args["dataset"], datesort=True, verbose=args["verbose"], bytestore=args["bytestore"])
 
