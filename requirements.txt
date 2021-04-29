@@ -11,6 +11,7 @@ gensim==3.8.3
 scipy==1.5.4
 NewlineJSON==1.0
 pandas==1.1.5
+spacy>= 3
 ################################################################
 # for usecase
 matplotlib==3.3.3
