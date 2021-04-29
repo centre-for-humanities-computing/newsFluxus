@@ -21,6 +21,9 @@ import argparse
 import os
 import json
 import pickle
+
+import spacy
+
 from tekisuto.datasets import DatasetLoaderNdjson
 from tekisuto.preprocessing import CaseFolder
 from tekisuto.preprocessing import RegxFilter

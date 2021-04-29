@@ -3,7 +3,7 @@ Simple preprocesser for lemmatization with Stanza
 """
 import stanza
 
-lang_dict={"da": "da_core_news_lg", "en": "en_core_web_lg"}}
+lang_dict={"da": "da_core_news_lg", "en": "en_core_web_lg"}
 
 class Lemmatizer:
     def __init__(self, lang="en"):
