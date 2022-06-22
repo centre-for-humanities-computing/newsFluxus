@@ -2,7 +2,7 @@
 # See README for GPU acceleration
 #
 ################################################################
-numpy==1.19.5
+numpy==1.22.0
 #torch
 #torchvision
 stanza==1.1.1
